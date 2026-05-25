@@ -16,74 +16,74 @@ All times are in UTC.
 
 ## Timeline
 
-### Day 1 — Initial Access
+### Day 1 Initial Access
 
 ```
-08:14 UTC — T+0
+08:14 UTC T+0
 Event: Phishing email received by user mike.chen@nexuscorp.com
-Subject: "Q2 Performance Review — Action Required"
+Subject: "Q2 Performance Review Action Required"
 Attachment: Q2_Review.docm (malicious Word macro)
 Evidence: Exchange mail logs, email gateway alert
 
-08:47 UTC — T+33min
+08:47 UTC T+33min
 Event: User opens Q2_Review.docm in Microsoft Word
-Evidence: Prefetch file — WINWORD.EXE-[hash].pf
-          Registry — recent documents list
+Evidence: Prefetch file WINWORD.EXE-[hash].pf
+          Registry recent documents list
 
-08:47 UTC — T+33min
+08:47 UTC T+33min
 Event: Malicious macro executes
 Parent process: WINWORD.EXE (PID 4821)
 Child process: PowerShell.exe -EncodedCommand [base64]
-Evidence: Windows Event ID 4688 — process creation
-          Sysmon Event ID 1 — process creation with command line
+Evidence: Windows Event ID 4688 process creation
+          Sysmon Event ID 1 process creation with command line
 
-08:48 UTC — T+34min
+08:48 UTC T+34min
 Event: PowerShell downloads second stage payload
 URL: http://45.131.214.85/update.exe
 File saved: C:\Users\mike.chen\AppData\Roaming\update.exe
 Evidence: Proxy logs, PowerShell script block logging
-          Sysmon Event ID 11 — file creation
+          Sysmon Event ID 11 file creation
 
-08:48 UTC — T+34min
+08:48 UTC T+34min
 Event: update.exe executed
 File hash (SHA256): [record from investigation]
-Evidence: Prefetch file — UPDATE.EXE-[hash].pf
+Evidence: Prefetch file UPDATE.EXE-[hash].pf
           Windows Event ID 4688
 ```
 
 ---
 
-### Day 1 — Persistence Established
+### Day 1 Persistence Established
 
 ```
-08:49 UTC — T+35min
+08:49 UTC T+35min
 Event: Attacker establishes persistence via registry run key
 Key: HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 Value: "WindowsUpdate" = "C:\Users\mike.chen\AppData\Roaming\update.exe"
 Evidence: Registry hive analysis
-          Sysmon Event ID 13 — registry value set
+          Sysmon Event ID 13 registry value set
 
-08:50 UTC — T+36min
+08:50 UTC T+36min
 Event: Scheduled task created for persistence
 Task name: \Microsoft\Windows\WindowsUpdate\AUSessionConnect2
 Command: PowerShell.exe -WindowStyle Hidden -EncodedCommand [base64]
-Evidence: Windows Event ID 4698 — scheduled task created
+Evidence: Windows Event ID 4698 scheduled task created
           C:\Windows\System32\Tasks\ directory
 ```
 
 ---
 
-### Day 1 — Credential Harvesting
+### Day 1 Credential Harvesting
 
 ```
-09:15 UTC — T+61min
+09:15 UTC T+61min
 Event: Mimikatz-style credential dumping detected
 Process: update.exe attempts to access LSASS memory
-Evidence: Windows Event ID 4656 — handle to LSASS requested
-          Sysmon Event ID 10 — process access to lsass.exe
-          EDR alert — credential dumping technique detected
+Evidence: Windows Event ID 4656 handle to LSASS requested
+          Sysmon Event ID 10 process access to lsass.exe
+          EDR alert credential dumping technique detected
 
-09:17 UTC — T+63min
+09:17 UTC T+63min
 Event: Local admin credentials harvested
 Account: WORKSTATION-22\LocalAdmin
 Method: LSASS memory dump
@@ -92,63 +92,63 @@ Evidence: EDR telemetry, memory artefacts
 
 ---
 
-### Day 1 — Lateral Movement
+### Day 1 Lateral Movement
 
 ```
 09:45 UTC — T+91min
 Event: Attacker uses harvested credentials for lateral movement
 Source: WORKSTATION-22 (10.0.0.55)
 Destination: FILE-SERVER-01 (10.0.0.10)
-Protocol: SMB — port 445
-Evidence: Windows Event ID 4624 — logon type 3 (network)
-          Windows Event ID 4648 — explicit credential logon
-          Firewall logs — SMB traffic between workstations
+Protocol: SMB port 445
+Evidence: Windows Event ID 4624 logon type 3 (network)
+          Windows Event ID 4648 explicit credential logon
+          Firewall logs SMB traffic between workstations
 
 10:02 UTC — T+108min
 Event: Attacker accesses shared drive on FILE-SERVER-01
 Path: \\FILE-SERVER-01\Finance\Q2_Reports\
 Files accessed: 47 files viewed, 12 downloaded
-Evidence: Windows Event ID 4663 — object access
+Evidence: Windows Event ID 4663 object access
           File server access logs
 ```
 
 ---
 
-### Day 1 — Data Exfiltration
+### Day 1 Data Exfiltration
 
 ```
-10:30 UTC — T+136min
+10:30 UTC T+136min
 Event: Data staged for exfiltration
 Location: C:\Users\mike.chen\AppData\Local\Temp\archive.zip
 Contents: 12 finance files from FILE-SERVER-01
 Size: 47MB
 Evidence: File creation logs, Sysmon Event ID 11
 
-10:47 UTC — T+153min
+10:47 UTC T+153min
 Event: Data exfiltrated to C2 server
 Destination: 45.131.214.85:443
 Protocol: HTTPS (encrypted)
 Data volume: 47MB outbound
 Evidence: Proxy logs, firewall logs, NetFlow data
-          SIEM alert — large outbound transfer detected
+          SIEM alert large outbound transfer detected
 ```
 
 ---
 
-### Day 1 — Detection & Response
+### Day 1 Detection & Response
 
 ```
-11:15 UTC — T+181min
-Event: SIEM alert fires — large outbound data transfer
+11:15 UTC T+181min
+Event: SIEM alert fires large outbound data transfer
 Rule: Outbound transfer > 10MB to external IP
-Analyst: James — SOC Tier 1
+Analyst: William — SOC Tier 1
 
-11:23 UTC — T+189min
+11:23 UTC T+189min
 Event: SOC investigation begins
-Actions: Source IP 45.131.214.85 enriched — confirmed malicious
+Actions: Source IP 45.131.214.85 enriched confirmed malicious
          Host WORKSTATION-22 isolated via EDR
 
-11:45 UTC — T+211min
+11:45 UTC T+211min
 Event: Incident escalated to Tier 2 and IR team
 Full attack chain identified
 Evidence preservation initiated

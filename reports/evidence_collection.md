@@ -18,10 +18,10 @@
 
 ```
 Evidence collected by: James (SOC Analyst Tier 1)
-Collection method: Live forensics — system running
+Collection method: Live forensics system running
 Collection time: 2026-05-23 09:00 UTC
-Evidence stored: Encrypted container — AES-256
-Hash verified: Yes — SHA256 checksums recorded
+Evidence stored: Encrypted container AES-256
+Hash verified: Yes SHA256 checksums recorded
 Tamper evidence: Digital signatures applied
 ```
 
@@ -40,7 +40,7 @@ Time-stamp everything.
 
 ---
 
-## Phase 1 — Volatile Evidence (Collect First — Lost on Reboot)
+## Phase 1 Volatile Evidence (Collect First Lost on Reboot)
 
 Volatile evidence exists only in memory and active system state.
 It is lost the moment the machine is powered off.
@@ -142,7 +142,7 @@ lsof | grep -v "^COMMAND" | head -30
 
 ---
 
-## Phase 2 — Non-Volatile Evidence (Persists After Reboot)
+## Phase 2 Non-Volatile Evidence (Persists After Reboot)
 
 ### 2.1 Windows Event Logs
 
@@ -175,7 +175,7 @@ Export-Csv -Path C:\forensics\security_events.csv
 
 **What they are:**
 Windows stores prefetch files for every application run.
-They prove what programs were executed — even if deleted.
+They prove what programs were executed even if deleted.
 
 **Location:**
 ```
@@ -194,7 +194,7 @@ C:\Windows\Prefetch\
 
 ### 2.3 Registry Keys
 
-**Persistence locations — attackers love these:**
+**Persistence locations attackers love these:**
 ```
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce
@@ -233,13 +233,13 @@ find / -mtime -1 -type f 2>/dev/null | grep -v proc
 
 ---
 
-## Phase 3 — File Hashing for Integrity
+## Phase 3 File Hashing for Integrity
 
 Every piece of evidence must be hashed to prove it has not been tampered with.
 
 **Command:**
 ```bash
-# Generate SHA256 hash — Windows
+# Generate SHA256 hash - Windows
 Get-FileHash -Algorithm SHA256 -Path C:\evidence\memory.dmp
 
 # Generate SHA256 hash — Linux

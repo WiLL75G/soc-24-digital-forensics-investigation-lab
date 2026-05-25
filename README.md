@@ -4,11 +4,11 @@
 
 ## Incident Summary
 
-- **Incident Type:** Full Endpoint Compromise — DFIR Investigation
-- **Severity:** Critical — Credential Theft + Data Exfiltration Confirmed
+- **Incident Type:** Full Endpoint Compromise DFIR Investigation
+- **Severity:** Critical Credential Theft + Data Exfiltration Confirmed
 - **Detection Method:** SIEM Alert → DFIR Investigation → Attack Timeline Reconstruction
 - **Tools Referenced:** Splunk, Sysmon, Windows Event Logs, Prefetch, Registry Analysis, EDR
-- **Status:** Complete — Full Attack Chain Reconstructed, 47MB Exfiltration Confirmed
+- **Status:** Complete Full Attack Chain Reconstructed, 47MB Exfiltration Confirmed
 
 ---
 
@@ -26,7 +26,7 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 - **OS:** Windows 11 Pro
 - **Secondary Host Affected:** FILE-SERVER-01 (10.0.0.10)
 - **C2 Server:** 45.131.214.85
-- **Data Exfiltrated:** 47MB — Finance Q2 Reports
+- **Data Exfiltrated:** 47MB Finance Q2 Reports
 
 ---
 
@@ -34,10 +34,10 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 
 ---
 
-### 1. Evidence Collection — Volatile Artefacts First
+### 1. Evidence Collection Volatile Artefacts First
 
 - Applied the forensics golden rule: Collect → Preserve → Analyse → Report
-- Collected volatile evidence first — running processes, network connections, logged in users
+- Collected volatile evidence first running processes, network connections, logged in users
 - Identified suspicious process: update.exe running from AppData\Roaming
 - Identified outbound connection to 45.131.214.85:443 from update.exe
 - All evidence hashed with SHA256 before and after collection
@@ -45,19 +45,19 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 
 #### SOC Observations:
 
-- Volatile evidence is lost on reboot — always collect it first
-- A process running from %APPDATA% is an immediate red flag — legitimate software never runs from there
+- Volatile evidence is lost on reboot always collect it first
+- A process running from %APPDATA% is an immediate red flag legitimate software never runs from there
 - SHA256 hashing of all evidence proves integrity and is required for any legal proceedings
 
 ---
 
-### 2. Evidence Collection — Non-Volatile Artefacts
+### 2. Evidence Collection Non-Volatile Artefacts
 
-- Exported Windows Event Logs — Security, System, Application
-- Analysed Prefetch files — confirmed WINWORD.EXE spawning PowerShell
-- Analysed Registry run keys — found malicious persistence entry "WindowsUpdate"
-- Identified recently modified files — archive.zip created in temp directory
-- Reviewed scheduled tasks — found malicious task AUSessionConnect2
+- Exported Windows Event Logs Security, System, Application
+- Analysed Prefetch files confirmed WINWORD.EXE spawning PowerShell
+- Analysed Registry run keys found malicious persistence entry "WindowsUpdate"
+- Identified recently modified files archive.zip created in temp directory
+- Reviewed scheduled tasks found malicious task AUSessionConnect2
 
 #### Key Event IDs Collected:
 - Event 4688 — PowerShell spawned by WINWORD.EXE
@@ -69,7 +69,7 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 #### SOC Observations:
 
 - Prefetch files prove execution even if the malware was deleted after running
-- Registry run keys are the most common persistence mechanism — always check them
+- Registry run keys are the most common persistence mechanism always check them
 - Event ID 4656 with LSASS as the target object is a confirmed credential dumping indicator
 
 ---
@@ -99,8 +99,8 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 
 #### SOC Observations:
 
-- The attacker had 3 hours of dwell time before detection — earlier detection is the goal
-- Every stage of the attack left forensic evidence — DFIR is about finding and connecting the dots
+- The attacker had 3 hours of dwell time before detection earlier detection is the goal
+- Every stage of the attack left forensic evidence DFIR is about finding and connecting the dots
 - Timeline reconstruction is the deliverable that Tier 2 and IR teams need to act
 
 ---
@@ -143,10 +143,10 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 
 ## SOC Analyst Findings
 
-- Full attack chain confirmed — phishing to exfiltration in 3 hours 9 minutes
+- Full attack chain confirmed phishing to exfiltration in 3 hours 9 minutes
 - Malicious Word macro delivered PowerShell payload via user execution
 - update.exe established persistence via registry run key and scheduled task
-- LSASS credential dump confirmed — local admin credentials harvested
+- LSASS credential dump confirmed local admin credentials harvested
 - Lateral movement to FILE-SERVER-01 using harvested credentials
 - 47 finance files staged and exfiltrated to C2 server 45.131.214.85
 - Total dwell time: 3 hours 9 minutes before SIEM detection
@@ -158,7 +158,7 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 - WORKSTATION-22 isolated via EDR immediately upon detection
 - C2 IP 45.131.214.85 blocked at perimeter firewall
 - mike.chen account disabled and password reset forced
-- FILE-SERVER-01 access reviewed — no further compromise found
+- FILE-SERVER-01 access reviewed no further compromise found
 - Malicious registry key and scheduled task removed
 - update.exe quarantined and submitted for malware analysis
 - All forensic evidence preserved with SHA256 hashes
@@ -168,13 +168,13 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 
 ## Analyst Insight
 
-Digital forensics is detective work with timestamps. Every attacker action leaves a trace — the job of the DFIR analyst is to find those traces, sequence them into a timeline, and present a story that answers four questions: How did they get in? What did they do? What did they take? How do we stop it happening again? In this investigation, the 3-hour dwell time before detection is the most important finding — not because the analyst failed, but because it shows exactly where the detection gap is and how to close it.
+Digital forensics is detective work with timestamps. Every attacker action leaves a trace the job of the DFIR analyst is to find those traces, sequence them into a timeline, and present a story that answers four questions: How did they get in? What did they do? What did they take? How do we stop it happening again? In this investigation, the 3-hour dwell time before detection is the most important finding not because the analyst failed, but because it shows exactly where the detection gap is and how to close it.
 
 ---
 
 ## Learning Outcome
 
-- Apply the DFIR golden rule — Collect, Preserve, Analyse, Report
+- Apply the DFIR golden rule Collect, Preserve, Analyse, Report
 - Identify and collect volatile evidence before non-volatile
 - Use Windows Event IDs to reconstruct attack activity
 - Analyse Prefetch files, Registry keys, and Scheduled Tasks for forensic evidence
@@ -200,4 +200,4 @@ soc-24-digital-forensics-investigation-lab/
 
 ## Conclusion
 
-This lab demonstrates a complete Digital Forensics and Incident Response workflow. A full attack chain was reconstructed from forensic evidence — phishing delivery, PowerShell execution, persistence, credential theft, lateral movement, and data exfiltration. Twelve MITRE ATT&CK techniques were mapped with supporting evidence. This project proves the ability to investigate a compromised endpoint, reconstruct what happened, and deliver the forensic evidence package that Tier 2 and IR teams need to respond effectively.
+This lab demonstrates a complete Digital Forensics and Incident Response workflow. A full attack chain was reconstructed from forensic evidence phishing delivery, PowerShell execution, persistence, credential theft, lateral movement, and data exfiltration. Twelve MITRE ATT&CK techniques were mapped with supporting evidence. This project proves the ability to investigate a compromised endpoint, reconstruct what happened, and deliver the forensic evidence package that Tier 2 and IR teams need to respond effectively.

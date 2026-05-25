@@ -41,7 +41,7 @@ A full Digital Forensics and Incident Response (DFIR) investigation was conducte
 - Identified suspicious process: update.exe running from AppData\Roaming
 - Identified outbound connection to 45.131.214.85:443 from update.exe
 - All evidence hashed with SHA256 before and after collection
-- Chain of custody documented — no original evidence modified
+- Chain of custody documented no original evidence modified
 
 #### SOC Observations:
 
